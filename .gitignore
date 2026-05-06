@@ -1,0 +1,59 @@
+# =========================
+# 🔹 Backend (Spring Boot)
+# =========================
+backend/target/
+backend/*.log
+
+# Ignore sensitive configs
+backend/src/main/resources/application.properties
+backend/src/main/resources/application-*.properties
+
+# =========================
+# 🔹 Frontend (React)
+# =========================
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+
+# =========================
+# 🔹 Environment files
+# =========================
+.env
+*.env
+
+# =========================
+# 🔹 Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# 🔹 IDE / Editor
+# =========================
+.idea/
+.vscode/
+*.iml
+.settings/
+.project
+.classpath
+
+# =========================
+# 🔹 OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# 🔹 Temporary files
+# =========================
+*.swp
+*.swo
+*~
+*.tmp
+
+# =========================
+# 🔹 Misc
+# =========================
+.cache/
+coverage/
