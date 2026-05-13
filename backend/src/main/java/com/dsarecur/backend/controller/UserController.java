@@ -1,6 +1,7 @@
 package com.dsarecur.backend.controller;
 
-import com.dsarecur.backend.model.Response;
+import com.dsarecur.backend.dto.AuthResponse;
+import com.dsarecur.backend.dto.Response;
 import com.dsarecur.backend.model.Users;
 import com.dsarecur.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,12 @@ public class UserController {
     public Response<Users> registerUser(@RequestBody Users user) {
         Users savedUser = userService.saveUser(user);
         return new Response<>(savedUser, "User created successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public Response<AuthResponse> loginUser(@RequestBody Users user) {
+        String token = userService.verifyUser(user);
+        return new Response<>(new AuthResponse(token), "User logged in successfully", HttpStatus.OK);
     }
 
     @GetMapping("/")

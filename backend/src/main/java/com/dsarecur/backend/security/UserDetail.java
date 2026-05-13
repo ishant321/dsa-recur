@@ -1,5 +1,6 @@
-package com.dsarecur.backend.model;
+package com.dsarecur.backend.security;
 
+import com.dsarecur.backend.model.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +28,7 @@ public class UserDetail implements UserDetails {
 
     @Override
     public String getUsername() {
-        return getPassword();
+        return user.getEmail();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.dsarecur.backend.model;
+package com.dsarecur.backend.dto;
 
 import org.springframework.http.HttpStatus;
 
