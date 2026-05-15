@@ -1,120 +1,139 @@
-# 🔁 DSA Recur — Data Model Documentation (UUID Version)
+# 🔁 DSA Recur — Full Data Model (Core + Dashboard)
 
 ---
 
-## 🧠 Overview
+# 🟦 CORE SERVICE — DOMAIN DATA (SOURCE OF TRUTH)
 
-DSA Recur uses a relational data model to support structured learning, revision tracking, and intelligent insights.
-
-The system is designed around:
-
-User → Topics/Subtopics → Questions/Theory → Revision Behavior → Insights
-
-The model prioritizes **revision behavior over completion tracking** to improve long-term retention.
+This service stores actual user content and learning structure.
 
 ---
 
-## 🟢 1. User
-
-| Field | Type | Description |
-|------|------|------------|
-| id | UUID | Primary key |
-| name | String | User name |
-| email | String (unique) | User email |
-| password | String | Hashed password |
-| createdAt | Timestamp | Account creation time |
-
----
-
-## 🔵 2. Topic
-
-| Field | Type | Description |
-|------|------|------------|
-| id | UUID | Primary key |
-| name | String | Topic name |
-| parentId | UUID (nullable) | Parent topic (null = main topic) |
-| userId | UUID | Owner user |
-| createdAt | Timestamp | Creation time |
+## 🟢 User
+| Field Name   | Type      | Description |
+|-------------|----------|-------------|
+| id          | UUID     | Unique identifier for the user (primary key). |
+| name        | STRING   | Name of the user. |
+| email       | STRING   | Unique email address of the user. |
+| password    | STRING   | Hashed password for authentication. |
+| createdAt   | TIMESTAMP | Timestamp when user was created. |
 
 ---
 
-## 🟡 3. Question
-
-| Field | Type | Description |
-|------|------|------------|
-| id | UUID | Primary key |
-| title | String | Question title |
-| link | String | External link |
-| difficulty | Enum (EASY, MEDIUM, HARD) | Difficulty level |
-| topicId | UUID | Associated topic/subtopic |
-| visitedCount | Integer | Number of revisions |
-| lastVisitedAt | Timestamp (nullable) | Last revision time |
-| createdAt | Timestamp | Creation time |
+## 🔵 Topic
+| Field Name   | Type      | Description |
+|-------------|----------|-------------|
+| id          | UUID     | Unique identifier for the topic (primary key). |
+| name        | STRING   | Name of the topic. |
+| parentId    | UUID     | Parent topic reference (nullable for root topics). |
+| userId      | UUID     | Owner of the topic. |
+| createdAt   | TIMESTAMP | Timestamp when topic was created. |
 
 ---
 
-## 🟣 4. Note
-
-| Field | Type | Description |
-|------|------|------------|
-| id | UUID | Primary key |
-| questionId | UUID | Associated question |
-| content | Text | Note content (supports multiline / markdown) |
-| createdAt | Timestamp | Creation time |
-| updatedAt | Timestamp (optional) | Last update time |
-
----
-
-## 🔴 5. Theory
-
-| Field | Type | Description |
-|------|------|------------|
-| id | UUID | Primary key |
-| title | String | Theory title |
-| content | Text (Markdown) | Markdown-formatted content |
-| topicId | UUID (nullable) | Optional topic association |
-| createdAt | Timestamp | Creation time |
+## 🟡 Question
+| Field Name     | Type      | Description |
+|---------------|----------|-------------|
+| id            | UUID     | Unique identifier for the question (primary key). |
+| title         | STRING   | Title or name of the question. |
+| link          | STRING   | External or internal reference link. |
+| difficulty    | ENUM     | Difficulty level (EASY / MEDIUM / HARD). |
+| topicId       | UUID     | Associated topic ID. |
+| visitedCount  | INT      | Number of times question was visited. |
+| lastVisitedAt | TIMESTAMP | Last time question was accessed. |
+| createdAt     | TIMESTAMP | Timestamp when question was created. |
 
 ---
 
-## 🔗 Relationships
-
-- User 1 → many Topics  
-- Topic 1 → many Subtopics  
-- Topic 1 → many Questions  
-- Question 1 → many Notes  
-- Topic 1 → many Theory items  
-
----
-
-## 🧩 ER Structure
-
-User  
- └── Topic  
-      ├── Topic (Subtopic)  
-      ├── Question  
-      │     └── Note  
-      └── Theory  
+## 🟣 Note
+| Field Name   | Type      | Description |
+|-------------|----------|-------------|
+| id          | UUID     | Unique identifier for the note (primary key). |
+| questionId  | UUID     | Associated question ID. |
+| content     | TEXT     | Markdown or rich text note content. |
+| createdAt   | TIMESTAMP | Timestamp when note was created. |
+| updatedAt   | TIMESTAMP | Last update timestamp. |
 
 ---
 
-## 📊 Dashboard Data Mapping
-
-| Feature | Data Used |
-|--------|----------|
-| Total Questions | Question count |
-| Total Revisions | Sum of visitedCount |
-| Topics Covered | Topic count |
-| Notes Count | Note count |
-| Weak Topics | Question count vs visits |
-| Most Revised Questions | High visitedCount |
-| Least Visited Questions | Low visitedCount |
-| Activity Over Time | lastVisitedAt |
-| Random Question | Question table |
-| Random Theory | Theory table |
+## 🔴 Theory
+| Field Name   | Type      | Description |
+|-------------|----------|-------------|
+| id          | UUID     | Unique identifier for theory content. |
+| title       | STRING   | Title of the theory topic. |
+| content     | TEXT     | Markdown or explanation content. |
+| topicId     | UUID     | Related topic (nullable). |
+| createdAt   | TIMESTAMP | Timestamp when created. |
 
 ---
 
-## 💯 Conclusion
+# 🟩 DASHBOARD SERVICE — ANALYTICS DATA (DERIVED STATE)
 
-This data model is normalized, scalable, and supports a revision-first learning system using UUID-based identifiers.
+This service stores only derived analytics from user behavior.
+
+---
+
+## 1. user_activity_daily
+
+| Field Name        | Type   | Description |
+|------------------|--------|-------------|
+| id               | UUID   | Primary key |
+| user_id          | UUID   | User reference |
+| date             | DATE   | Activity date |
+| total_visits     | INT    | Total interactions that day |
+| topic_visits     | INT    | Topic page visits |
+| question_visits  | INT    | Question page visits |
+| theory_visits    | INT    | Theory page visits |
+| note_visits      | INT    | Notes page visits |
+| created_at       | TIMESTAMP | Record creation time |
+| updated_at       | TIMESTAMP | Last update time |
+
+---
+
+## 2. user_entity_activity
+
+| Field Name        | Type   | Description |
+|------------------|--------|-------------|
+| id               | UUID   | Primary key |
+| user_id          | UUID   | User reference |
+| entity_type      | STRING | "TOPIC" or "QUESTION" |
+| entity_id        | UUID   | Topic ID or Question ID |
+| visit_count      | INT    | Number of times accessed |
+| revision_count   | INT    | Number of revisions |
+| last_visited_at  | TIMESTAMP | Last interaction time |
+| created_at       | TIMESTAMP | Record creation time |
+| updated_at       | TIMESTAMP | Last update time |
+
+---
+
+
+# 🧠 ARCHITECTURE RULES
+
+## Core Service
+- stores real user data
+- handles all CRUD operations
+- source of truth
+
+## Dashboard Service
+- stores only computed analytics
+- builds insights from events
+- never modifies core data
+
+---
+
+# 🔄 EVENT FLOW (Kafka)
+
+Core Service publishes events like:
+
+- USER_VISITED_QUESTION
+- USER_REVISED_QUESTION
+- USER_VISITED_TOPIC
+- USER_VIEWED_THEORY
+
+Dashboard Service consumes these events and updates analytics tables.
+
+---
+
+# 🎯 FINAL MODEL IDEA
+
+CORE = What happened  
+DASHBOARD = What it means  
