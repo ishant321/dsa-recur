@@ -10,7 +10,8 @@ The selection is based on:
 - scalability
 - industry relevance
 - resume strength
-- project requirements
+- system design best practices
+- event-driven architecture readiness
 
 ---
 
@@ -22,30 +23,77 @@ The selection is based on:
 - Industry standard for frontend development
 - Strong ecosystem and community support
 - Type safety improves maintainability
-- Shows versatility (Vue + React)
+- Works well for dashboard-based applications
 
 ---
 
-## 🔧 Backend
+## 🔧 Backend Architecture
 
+### 🧩 Microservices
+
+The system is split into two backend services:
+
+### 1. Core Service (Main Service)
 **Spring Boot (Java)**
 
-### Why
-- Enterprise-grade backend framework
-- Strong demand in product and service companies
-- Built-in support for REST APIs and security
-- Ideal for structured backend systems
+#### Responsibilities
+- Authentication (JWT-based)
+- Topic management
+- Question management
+- Notes & theory
+- Revision tracking
+- Core business logic
 
 ---
 
-## 🗄️ Database
+### 2. Dashboard Service (Analytics Service)
+**Spring Boot (Java)**
 
-**PostgreSQL**
+#### Responsibilities
+- Analytics processing
+- Streak calculations
+- Heatmaps
+- Progress tracking
+- Dashboard metrics
+- Aggregated reports
 
-### Why
-- Relational structure fits data model (User → Topic → Question)
-- Strong querying capabilities for dashboard analytics
-- Reliable and widely used in production
+---
+
+## 📨 Event Streaming
+
+**Apache Kafka**
+
+### Why Kafka
+- Enables asynchronous communication between services
+- Decouples Core Service from Dashboard Service
+- Ensures reliable event delivery
+- Supports scalable analytics processing
+
+### Event Flow Example
+- QUESTION_SOLVED
+- TOPIC_CREATED
+- REVISION_COMPLETED
+
+---
+
+## 🗄️ Databases
+
+### Core Database (PostgreSQL)
+Owned by Core Service:
+- users
+- topics
+- questions
+- notes
+- theory
+- revisions
+
+### Dashboard Database (PostgreSQL)
+Owned by Dashboard Service:
+- daily_stats
+- weekly_stats
+- streaks
+- heatmaps
+- analytics_cache
 
 ---
 
@@ -55,8 +103,9 @@ The selection is based on:
 
 ### Why
 - Stateless authentication
-- Scalable and widely adopted
-- Works well with REST APIs
+- Scales across microservices
+- Each service validates token independently
+- No session dependency
 
 ---
 
@@ -66,7 +115,7 @@ The selection is based on:
 
 ### Why
 - Easy integration with React
-- Suitable for dashboard visualizations
+- Suitable for dashboard analytics
 - Lightweight and flexible
 
 ---
@@ -74,20 +123,34 @@ The selection is based on:
 ## 🚀 Deployment
 
 ### Frontend
-Vercel
+- Vercel
 
-### Backend
-Render / Railway
+### Backend Services
+- Render / Railway
 
-### Database
-Supabase / Neon (PostgreSQL)
+### Databases
+- Supabase / Neon (PostgreSQL)
+
+### Kafka (Development)
+- Local Docker setup
+- Confluent Cloud (optional for production)
+
+---
+
+## 🧱 Architecture Style
+
+- Microservices Architecture
+- Event-Driven Architecture (Kafka)
+- Database-per-service pattern
+- Stateless authentication (JWT)
 
 ---
 
 ## 💯 Conclusion
 
 This stack ensures:
+- scalable distributed system design
 - clean separation of concerns
-- scalability
-- strong resume impact
-- real-world production alignment
+- real-world microservices architecture
+- strong backend + system design portfolio value
+- industry-aligned event-driven system using Kafka
