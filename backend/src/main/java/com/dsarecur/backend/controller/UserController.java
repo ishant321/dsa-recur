@@ -6,7 +6,6 @@ import com.dsarecur.backend.model.Users;
 import com.dsarecur.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +20,13 @@ public class UserController {
     @PostMapping("/register")
     public Response<Users> registerUser(@RequestBody Users user) {
         Users savedUser = userService.saveUser(user);
-        return new Response<>(savedUser, "User created successfully", HttpStatus.OK);
+        return new Response<>(savedUser, "User created successfully");
     }
 
     @PostMapping("/login")
     public Response<AuthResponse> loginUser(@RequestBody Users user) {
         String token = userService.verifyUser(user);
-        return new Response<>(new AuthResponse(token), "User logged in successfully", HttpStatus.OK);
+        return new Response<>(new AuthResponse(token), "User logged in successfully");
     }
 
     @GetMapping("/")
