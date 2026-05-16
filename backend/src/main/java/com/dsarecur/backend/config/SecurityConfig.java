@@ -29,15 +29,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http.csrf(customCsrfRequest -> customCsrfRequest.disable())
+//            .authorizeHttpRequests(request -> request
+//                    .requestMatchers("/register", "/login")
+//                    .permitAll()
+//                    .anyRequest().authenticated())
+//                .httpBasic(Customizer.withDefaults())
+//            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//            .build();
+
         return http.csrf(customCsrfRequest -> customCsrfRequest.disable())
-            .authorizeHttpRequests(request -> request
-                    .requestMatchers("/register", "/login", "/topics", "/topics/*")
-                    .permitAll()
-                    .anyRequest().authenticated())
+                .authorizeHttpRequests(request -> request
+                        .anyRequest()
+                        .permitAll())
                 .httpBasic(Customizer.withDefaults())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+                .build();
     }
 
     @Bean
