@@ -72,39 +72,101 @@ This service stores only derived analytics from user behavior.
 
 ---
 
-## 1. user_activity_daily
+# 📌 1. user_activity_daily
 
-| Field Name        | Type   | Description |
-|------------------|--------|-------------|
-| id               | UUID   | Primary key |
-| user_id          | UUID   | User reference |
-| date             | DATE   | Activity date |
-| total_visits     | INT    | Total interactions that day |
-| topic_visits     | INT    | Topic page visits |
-| question_visits  | INT    | Question page visits |
-| theory_visits    | INT    | Theory page visits |
-| note_visits      | INT    | Notes page visits |
+## Purpose
+Stores daily user activity for:
+- activity graphs
+- streak calculation
+- daily engagement tracking
+
+## Schema
+
+| Field Name        | Type      | Description |
+|------------------|----------|-------------|
+| id               | UUID     | Primary key |
+| user_id          | UUID     | User reference |
+| activity_date    | DATE     | Activity date |
+| revision_count   | INT      | Total revisions done that day |
+| topic_visits     | INT      | Topic page visits |
+| question_visits  | INT      | Question page visits |
+| theory_visits    | INT      | Theory page visits |
+| note_visits      | INT      | Notes page visits |
 | created_at       | TIMESTAMP | Record creation time |
 | updated_at       | TIMESTAMP | Last update time |
 
 ---
 
-## 2. user_entity_activity
+## Used For
 
-| Field Name        | Type   | Description |
-|------------------|--------|-------------|
-| id               | UUID   | Primary key |
-| user_id          | UUID   | User reference |
-| entity_type      | STRING | "TOPIC" or "QUESTION" |
-| entity_id        | UUID   | Topic ID or Question ID |
-| visit_count      | INT    | Number of times accessed |
-| revision_count   | INT    | Number of revisions |
-| last_visited_at  | TIMESTAMP | Last interaction time |
+- GET /dashboard/activity
+- current streak calculation
+- today revision count
+- activity heatmaps
+
+---
+
+# 📌 2. user_content_activity
+
+## Purpose
+Stores per-entity user behavior:
+- revision tracking
+- weak topics
+- most/least revised questions
+- summary analytics
+
+---
+
+## Schema
+
+| Field Name        | Type      | Description |
+|------------------|----------|-------------|
+| id               | UUID     | Primary key |
+| user_id          | UUID     | User reference |
+| entity_type      | ENUM     | QUESTION / TOPIC / THEORY / NOTE |
+| entity_id        | UUID     | Reference ID of entity |
+| topic_id         | UUID     | Topic reference |
+| revision_count   | INT      | Number of revisions |
+| visit_count      | INT      | Number of visits |
+| last_interacted_at | TIMESTAMP | Last interaction time |
 | created_at       | TIMESTAMP | Record creation time |
 | updated_at       | TIMESTAMP | Last update time |
 
 ---
 
+## Used For
+
+- GET /dashboard/summary
+- GET /dashboard/weak-topics
+- GET /dashboard/most-revised
+- GET /dashboard/least-visited
+
+---
+
+# 🧠 Design Summary
+
+## Separation of Concerns
+
+| Table | Responsibility |
+|------|---------------|
+| user_activity_daily | Time-based analytics |
+| user_content_activity | Entity-based analytics |
+
+---
+
+## Event Flow (Kafka)
+
+Core Service emits events:
+
+- USER_VISITED_TOPIC
+- USER_VISITED_QUESTION
+- USER_REVISED_QUESTION
+- USER_VIEWED_THEORY
+- USER_VIEWED_NOTE
+
+Dashboard Service consumes these events and updates analytics tables.
+
+---
 
 # 🧠 ARCHITECTURE RULES
 
@@ -117,19 +179,6 @@ This service stores only derived analytics from user behavior.
 - stores only computed analytics
 - builds insights from events
 - never modifies core data
-
----
-
-# 🔄 EVENT FLOW (Kafka)
-
-Core Service publishes events like:
-
-- USER_VISITED_QUESTION
-- USER_REVISED_QUESTION
-- USER_VISITED_TOPIC
-- USER_VIEWED_THEORY
-
-Dashboard Service consumes these events and updates analytics tables.
 
 ---
 

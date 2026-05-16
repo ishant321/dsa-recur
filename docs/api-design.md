@@ -578,6 +578,32 @@ Each time this API is called:
 
 ---
 
+## 📌 7. Get Random Question
+
+### Endpoint
+
+GET /questions/random
+
+---
+
+### Response
+
+#### 200 OK
+
+```json
+{
+  "data": {
+    "id": "question-uuid",
+    "title": "Two Sum",
+    "difficulty": "EASY",
+    "topicId": "topic-uuid"
+  },
+  "message": "Success"
+}
+```
+
+---
+
 ## ⚠️ Notes
 
 - All APIs require authentication.
@@ -951,10 +977,14 @@ GET /dashboard/summary
 ```json
 {
   "data": {
-    "totalQuestions": 120,
+    "questionsRevised": 120,
     "totalRevisions": 340,
     "topicsCovered": 12,
-    "notesCount": 45
+    "notesRevised": 45,
+    "theoriesRevised": 12,
+    "currentStreak": 7,
+    "todayRevisionCount": 18,
+    "mostRevisedTopic": "Graph"
   },
   "message": "Success"
 }
@@ -982,9 +1012,9 @@ Returns topics where **revision activity is low relative to number of questions*
 {
   "data": [
     {
-      "topicId": "topic-uuid",
+      "topicId": "topic-id",
       "topicName": "Graph",
-      "questionCount": 20,
+      "questionsRevised": 20,
       "totalRevisions": 5
     }
   ],
@@ -1008,14 +1038,14 @@ GET /dashboard/most-revised
 
 ```json
 {
-    "data": [
-        {
-            "questionId": "question-uuid",
-            "title": "Longest Substring",
-            "visitedCount": 12
-        }
-    ],
-    "message": "most visited data successfully fetched"
+  "data": [
+    {
+      "questionId": "question-uuid",
+      "title": "Longest Substring",
+      "revisionCount": 12
+    }
+  ],
+  "message": "Most revised questions fetched successfully"
 }
 
 ```
@@ -1036,14 +1066,14 @@ GET /dashboard/least-visited
 
 ```json
 {
-    "data": [
-        {
-            "questionId": "question-uuid",
-            "title": "Binary Search",
-            "visitedCount": 0
-        }
-    ],
-    "message": "least visited data successfully fetched"
+  "data": [
+    {
+      "questionId": "question-uuid",
+      "title": "Binary Search",
+      "revisionCount": 1
+    }
+  ],
+  "message": "Least revised questions fetched successfully"
 }
 
 ```
@@ -1067,35 +1097,9 @@ GET /dashboard/activity
   "data": [
     {
       "date": "2026-05-01",
-      "revisions": 5
+      "revisionCount": 5
     }
   ],
-  "message": "Success"
-}
-```
-
----
-
-## 📌 6. Get Random Question
-
-### Endpoint
-
-GET /questions/random
-
----
-
-### Response
-
-#### 200 OK
-
-```json
-{
-  "data": {
-    "id": "question-uuid",
-    "title": "Two Sum",
-    "difficulty": "EASY",
-    "topicId": "topic-uuid"
-  },
   "message": "Success"
 }
 ```
