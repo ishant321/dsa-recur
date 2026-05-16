@@ -63,6 +63,7 @@ public class QuestionService {
         topicRepository.findById(updateQuestionRequest.getTopicId())
                         .orElseThrow(()  -> new ResourceNotFoundException("Topic not found"));
         question.setTopicId(updateQuestionRequest.getTopicId());
+        question.setLastVisitedAt(LocalDateTime.now());
 
         questionRepository.save(question);
         return question;
