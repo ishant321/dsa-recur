@@ -3,11 +3,17 @@ package com.dsarecur.backend.service;
 import com.dsarecur.backend.dto.note.CreateNoteRequest;
 import com.dsarecur.backend.dto.note.UpdateNoteRequest;
 import com.dsarecur.backend.exception.ResourceNotFoundException;
+import com.dsarecur.backend.kafka.DashboardEvent;
+import com.dsarecur.backend.kafka.DashboardEventProducer;
 import com.dsarecur.backend.model.Notes;
+import com.dsarecur.backend.model.Users;
 import com.dsarecur.backend.repository.NoteRepository;
 import com.dsarecur.backend.repository.QuestionRepository;
+import com.dsarecur.backend.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +21,12 @@ import java.util.List;
 
 @Service
 public class NoteService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private DashboardEventProducer dashboardEventProducer;
 
     @Autowired
     private NoteRepository noteRepository;
@@ -41,7 +53,21 @@ public class NoteService {
         questionRepository.findById(questionId).
                 orElseThrow(() -> new ResourceNotFoundException("Question id not found"));
 
-        return noteRepository.findByQuestionId(questionId);
+        List<Notes> notes =  noteRepository.findByQuestionId(questionId);
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        DashboardEvent event = new DashboardEvent();
+        event.setUserId(email);
+        event.setEntityId(questionId);
+        event.setEntityType(DashboardEvent.EntityType.NOTE);
+        event.setLastVisited(LocalDateTime.now());
+        dashboardEventProducer.publishEvent(event);
+
+        return notes;
     }
 
     public Notes updateNote(@Valid UpdateNoteRequest requestNote) {

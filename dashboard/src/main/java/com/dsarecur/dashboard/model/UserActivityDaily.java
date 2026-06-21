@@ -17,7 +17,7 @@ public class UserActivityDaily {
     private Integer id;
 
     @NotNull
-    private String user_id;
+    private String userId;
 
     @NotNull
     private LocalDate date; // Activity date
@@ -43,9 +43,9 @@ public class UserActivityDaily {
     public UserActivityDaily() {
     }
 
-    public UserActivityDaily(Integer id, String user_id, LocalDate date, Integer totalVisits, Integer topicVisits, Integer questionVisits, Integer theoryVisits, Integer notesVisits, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserActivityDaily(Integer id, String userId, LocalDate date, Integer totalVisits, Integer topicVisits, Integer questionVisits, Integer theoryVisits, Integer notesVisits, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.user_id = user_id;
+        this.userId = userId;
         this.date = date;
         this.totalVisits = totalVisits;
         this.topicVisits = topicVisits;
@@ -64,12 +64,12 @@ public class UserActivityDaily {
         this.id = id;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public LocalDate getDate() {

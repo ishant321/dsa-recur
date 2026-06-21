@@ -6,9 +6,11 @@ import com.dsarecur.dashboard.dto.LeastRevisedQuestionDto;
 import com.dsarecur.dashboard.dto.MostRevisedQuestionDto;
 import com.dsarecur.dashboard.dto.SummaryDto;
 import com.dsarecur.dashboard.dto.WeakTopicDto;
+import com.dsarecur.dashboard.kafka.DashboardEvent;
 import com.dsarecur.dashboard.model.UserActivityDaily;
 import com.dsarecur.dashboard.model.UserEntityActivity;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.dsarecur.dashboard.constants.EntityType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,7 @@ public class UserActivityDailyService {
         int questionsRevised = userEntityActivityInfo.stream()
                 .filter(activity -> activity.getUserId().equals(userEmail))
                 .filter(activity ->
-                        activity.getEntityType() == UserEntityActivity.EntityType.QUESTION)
+                        activity.getEntityType() == EntityType.QUESTION)
                 .mapToInt(UserEntityActivity::getVisitCount)
                 .sum();
 
@@ -58,12 +60,13 @@ public class UserActivityDailyService {
                 .mapToInt(UserEntityActivity::getVisitCount)
                 .sum();
         summaryDto.setTotalRevisions(totalRevisions);
+        System.out.println("userEmail: " + userEmail);
 
         // 3. topicsCovered: from "UserEntityActivity" count of unique topics(entityType)
         int topicsCovered = (int) userEntityActivityInfo.stream()
                 .filter(activity -> activity.getUserId().equals(userEmail))
                 .filter(activity ->
-                        activity.getEntityType() == UserEntityActivity.EntityType.TOPIC)
+                        activity.getEntityType() == EntityType.TOPIC)
                 .map(UserEntityActivity::getEntityId)
                 .distinct()
                 .count();
@@ -74,7 +77,7 @@ public class UserActivityDailyService {
         int notesRevised = (int) userEntityActivityInfo.stream()
                 .filter(activity -> activity.getUserId().equals(userEmail))
                 .filter(activity ->
-                        activity.getEntityType() == UserEntityActivity.EntityType.NOTE)
+                        activity.getEntityType() == EntityType.NOTE)
                 .map(UserEntityActivity::getEntityId)
                 .distinct()
                 .count();
@@ -85,7 +88,7 @@ public class UserActivityDailyService {
         int theoriesRevised = (int) userEntityActivityInfo.stream()
                 .filter(activity -> activity.getUserId().equals(userEmail))
                 .filter(activity ->
-                        activity.getEntityType() == UserEntityActivity.EntityType.THEORY)
+                        activity.getEntityType() == EntityType.THEORY)
                 .map(UserEntityActivity::getEntityId)
                 .distinct()
                 .count();
@@ -99,7 +102,7 @@ public class UserActivityDailyService {
 
         // Get all activity dates of current user
         Set<LocalDate> activityDates = userActivityDailyInfo.stream()
-                .filter(activity -> activity.getUser_id().equals(userEmail))
+                .filter(activity -> activity.getUserId().equals(userEmail))
                 .map(UserActivityDaily::getDate)
                 .collect(Collectors.toSet());
 
@@ -112,7 +115,7 @@ public class UserActivityDailyService {
 
         // 7. todayRevisionCount: in "UserActivityDaily" check for date today and get the users "total_visits"
         int todayRevisionCount = userActivityDailyInfo.stream()
-                .filter(activity -> activity.getUser_id().equals(userEmail))
+                .filter(activity -> activity.getUserId().equals(userEmail))
                 .filter(activity -> activity.getDate().equals(LocalDate.now()))
                 .mapToInt(UserActivityDaily::getTotalVisits)
                 .sum();
@@ -123,7 +126,7 @@ public class UserActivityDailyService {
         Integer mostRevisedTopic = userEntityActivityInfo.stream()
                 .filter(activity -> activity.getUserId().equals(userEmail))
                 .filter(activity ->
-                        activity.getEntityType() == UserEntityActivity.EntityType.TOPIC)
+                        activity.getEntityType() == EntityType.TOPIC)
                 .max(Comparator.comparingInt(UserEntityActivity::getVisitCount))
                 .map(UserEntityActivity::getEntityId)
                 .orElse(null);
@@ -162,7 +165,7 @@ public class UserActivityDailyService {
                 // Only TOPIC entities
                 .filter(activity ->
                         activity.getEntityType()
-                                == UserEntityActivity.EntityType.TOPIC)
+                                == EntityType.TOPIC)
 
                 // Weak topic criteria
                 .filter(activity ->
@@ -205,7 +208,7 @@ public class UserActivityDailyService {
                 // Only QUESTION type
                 .filter(activity ->
                         activity.getEntityType()
-                                == UserEntityActivity.EntityType.QUESTION)
+                                == EntityType.QUESTION)
 
                 // Sort descending by revisionCount
                 .sorted((a, b) ->
@@ -250,7 +253,7 @@ public class UserActivityDailyService {
                 // Only QUESTION type
                 .filter(activity ->
                         activity.getEntityType()
-                                == UserEntityActivity.EntityType.QUESTION)
+                                == EntityType.QUESTION)
 
                 // Sort ascending by revisionCount
                 .sorted(Comparator.comparingInt(
@@ -288,7 +291,7 @@ public class UserActivityDailyService {
 
                 // Current user filter
                 .filter(activity ->
-                        activity.getUser_id().equals(userEmail))
+                        activity.getUserId().equals(userEmail))
 
                 // Today's activity only
                 .filter(activity ->
@@ -299,5 +302,101 @@ public class UserActivityDailyService {
 
                 // Sum total visits
                 .sum();
+    }
+
+    public void processEvent(DashboardEvent event) {
+        System.out.println("coming");
+        String userId = event.getUserId().toString();
+        LocalDate today = LocalDate.now();
+
+        UserActivityDaily activity =
+                userActivityDailyRepo
+                        .findByUserIdAndDate(userId, today)
+                        .orElseGet(() -> {
+
+                            UserActivityDaily newActivity =
+                                    new UserActivityDaily();
+
+                            newActivity.setUserId(userId);
+                            newActivity.setDate(today);
+                            newActivity.setTotalVisits(0);
+                            newActivity.setTopicVisits(0);
+                            newActivity.setQuestionVisits(0);
+                            newActivity.setTheoryVisits(0);
+                            newActivity.setNotesVisits(0);
+                            newActivity.setCreatedAt(LocalDateTime.now());
+                            newActivity.setUpdatedAt(LocalDateTime.now());
+
+                            return newActivity;
+                        });
+
+        activity.setTotalVisits(
+                activity.getTotalVisits() + 1
+        );
+
+        switch (event.getEntityType()) {
+
+            case TOPIC ->
+                    activity.setTopicVisits(
+                            activity.getTopicVisits() + 1);
+
+            case QUESTION ->
+                    activity.setQuestionVisits(
+                            activity.getQuestionVisits() + 1);
+
+            case THEORY ->
+                    activity.setTheoryVisits(
+                            activity.getTheoryVisits() + 1);
+
+            case NOTE ->
+                    activity.setNotesVisits(
+                            activity.getNotesVisits() + 1);
+        }
+
+        activity.setUpdatedAt(LocalDateTime.now());
+        System.out.println("📊 UserActivityDaily => userId=" + activity.getUserId()
+                + ", date=" + activity.getDate()
+                + ", totalVisits=" + activity.getTotalVisits()
+                + ", topicVisits=" + activity.getTopicVisits()
+                + ", questionVisits=" + activity.getQuestionVisits()
+                + ", theoryVisits=" + activity.getTheoryVisits()
+                + ", notesVisits=" + activity.getNotesVisits()
+                + ", updatedAt=" + activity.getUpdatedAt());
+
+        userActivityDailyRepo.save(activity);
+
+        UserEntityActivity entityActivity =
+                userEntityActivityRepo
+                        .findByUserIdAndEntityIdAndEntityType(
+                                userId,
+                                event.getEntityId(),
+                                event.getEntityType()
+                        )
+                        .orElseGet(() -> {
+
+                            UserEntityActivity newActivity =
+                                    new UserEntityActivity();
+
+                            newActivity.setUserId(userId);
+                            newActivity.setEntityId(event.getEntityId());
+                            newActivity.setEntityType(event.getEntityType());
+
+                            newActivity.setVisitCount(0);
+
+                            newActivity.setLastVisitedAt(LocalDateTime.now());
+                            newActivity.setCreatedAt(LocalDateTime.now());
+                            newActivity.setUpdatedAt(LocalDateTime.now());
+
+                            return newActivity;
+                        });
+
+        // increment visits
+        entityActivity.setVisitCount(entityActivity.getVisitCount() + 1);
+
+        // update timestamps
+        entityActivity.setLastVisitedAt(LocalDateTime.now());
+        entityActivity.setUpdatedAt(LocalDateTime.now());
+
+        userEntityActivityRepo.save(entityActivity);
     }
 }

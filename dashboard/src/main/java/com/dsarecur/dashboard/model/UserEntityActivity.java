@@ -1,17 +1,17 @@
 package com.dsarecur.dashboard.model;
 
+import com.dsarecur.dashboard.constants.EntityType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 public class UserEntityActivity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    public UserEntityActivity(Integer id, String userId, EntityType entityType, Integer entityId, Integer visitCount, Integer revisionCount, LocalDateTime lastVisitedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserEntityActivity(Integer id, String userId, EntityType entityType, Integer entityId, Integer visitCount, LocalDateTime lastVisitedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
         this.entityType = entityType;
@@ -40,13 +40,6 @@ public class UserEntityActivity {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    public enum EntityType {
-        TOPIC,
-        QUESTION,
-        NOTE,
-        THEORY
-    }
 
     // Getters and Setters
 
@@ -98,8 +91,8 @@ public class UserEntityActivity {
         this.lastVisitedAt = lastVisitedAt;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
