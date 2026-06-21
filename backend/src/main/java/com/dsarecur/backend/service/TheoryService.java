@@ -3,10 +3,16 @@ package com.dsarecur.backend.service;
 import com.dsarecur.backend.dto.theory.CreateTheoryRequest;
 import com.dsarecur.backend.dto.theory.UpdateTheoryRequest;
 import com.dsarecur.backend.exception.ResourceNotFoundException;
+import com.dsarecur.backend.kafka.DashboardEvent;
+import com.dsarecur.backend.kafka.DashboardEventProducer;
 import com.dsarecur.backend.model.Theory;
+import com.dsarecur.backend.model.Users;
 import com.dsarecur.backend.repository.TheoryRepository;
+import com.dsarecur.backend.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,7 +22,13 @@ import java.util.List;
 public class TheoryService {
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TheoryRepository theoryRepository;
+
+    @Autowired
+    private DashboardEventProducer dashboardEventProducer;
 
     public Theory createTheory(CreateTheoryRequest theoryRequest) {
         Theory theory = new Theory();
@@ -33,9 +45,24 @@ public class TheoryService {
     }
 
     public Theory getTheoryById(Integer id) {
-        return theoryRepository
+        Theory theory = theoryRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Theory not found with id: " + id));
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        DashboardEvent event = new DashboardEvent();
+        event.setUserId(email);
+        event.setEntityId(id);
+        event.setEntityType(DashboardEvent.EntityType.THEORY);
+        event.setLastVisited(LocalDateTime.now());
+        dashboardEventProducer.publishEvent(event);
+
+
+        return theory;
     }
 
     public Theory deleteTheoryById(Integer id) {
