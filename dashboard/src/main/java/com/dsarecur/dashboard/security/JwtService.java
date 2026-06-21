@@ -1,21 +1,18 @@
-package com.dsarecur.backend.security;
+package com.dsarecur.dashboard.security;
 
-import com.dsarecur.backend.model.Users;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import io.jsonwebtoken.Claims;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JWTService {
+public class JwtService {
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -26,22 +23,12 @@ public class JWTService {
         );
     }
 
-    public String generateToken(Users user) {
-        Map<String, Object> claims = new HashMap<String, Object>();
-
-        return Jwts.builder()
-                .claims()
-                .add(claims)
-                .subject(user.getEmail())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 30))
-                .and()
-                .signWith(getKey())
-                .compact();
-    }
-
     public String extractUserEmail(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -55,11 +42,6 @@ public class JWTService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    public boolean validateToken(String token, UserDetail userDetail) {
-        final String userName = extractUserEmail(token);
-        return (userName.equals(userDetail.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
