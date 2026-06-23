@@ -1,9 +1,11 @@
 package com.dsarecur.backend.security;
 
 import com.dsarecur.backend.model.Users;
+import com.dsarecur.backend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,56 +19,128 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private SecretKey getKey() {
-        return Keys.hmacShaKeyFor(
-                secretKey.getBytes(StandardCharsets.UTF_8)
-        );
+    @Value("${jwt.refresh-secret}")
+    private String refreshSecretKey;
+
+    private SecretKey getKey(String type) {
+        return type.equals("ACCESS") ?
+                Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8))
+                :
+                Keys.hmacShaKeyFor(refreshSecretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(Users user) {
+    public String generateAccessToken(Users user) {
         Map<String, Object> claims = new HashMap<String, Object>();
+        claims.put("type", "ACCESS");
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 15))
                 .and()
-                .signWith(getKey())
+                .signWith(getKey("ACCESS"))
                 .compact();
     }
 
-    public String extractUserEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String generateRefreshToken(Users user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "REFRESH");
+
+        return Jwts.builder()
+                .claims()
+                .add(claims)
+                .subject(user.getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 days
+                .and()
+                .signWith(getKey("REFRESH"))
+                .compact();
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    public String extractUserEmail(String token, String type) {
+        return extractClaim(token, Claims::getSubject, type);
     }
 
-    private Claims extractAllClaims(String token) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver, String type) {
+        if("ACCESS".equals(type)) {
+            final Claims claims = extractAccessClaims(token);
+            return claimsResolver.apply(claims);
+        }
+        else if ("REFRESH".equals(type)) {
+            final Claims claims = extractRefreshClaims(token);
+            return claimsResolver.apply(claims);
+        }
+        return null;
+    }
+
+    private Claims extractAccessClaims(String token) {
         return Jwts.parser()
-                .verifyWith(getKey())
+                .verifyWith(getKey("ACCESS"))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    public boolean validateToken(String token, UserDetail userDetail) {
-        final String userName = extractUserEmail(token);
-        return (userName.equals(userDetail.getUsername()) && !isTokenExpired(token));
+    private Claims extractRefreshClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey("REFRESH"))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public boolean validateAccessToken(String token, UserDetail userDetail) {
+        Claims claims = extractAccessClaims(token);
+
+        String email = claims.getSubject();
+        String type = claims.get("type", String.class);
+
+        return email.equals(userDetail.getUsername())
+                && !isTokenExpired(token, "ACCESS")
+                && "ACCESS".equals(type);
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public boolean validateRefreshToken(String token) {
+        Claims claims = extractRefreshClaims(token);
+
+        String type = claims.get("type", String.class);
+        return !isTokenExpired(token, type)
+                && "REFRESH".equals(type);
+    }
+
+    private boolean isTokenExpired(String token, String type) {
+        return extractExpiration(token, type).before(new Date());
+    }
+
+    private Date extractExpiration(String token, String type) {
+        return extractClaim(token, Claims::getExpiration, type);
+    }
+
+    public String getNewAccessToken(String refreshToken) {
+
+        Claims claims = extractRefreshClaims(refreshToken);
+
+        if (!validateRefreshToken(refreshToken)) {
+            throw new RuntimeException("Invalid refresh token");
+        }
+
+        String email = claims.getSubject();
+
+        // IMPORTANT: load user (so token is not blindly trusted)
+        Users user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        return generateAccessToken(user);
     }
 }

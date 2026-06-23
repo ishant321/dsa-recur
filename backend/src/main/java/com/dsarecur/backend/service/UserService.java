@@ -1,5 +1,6 @@
 package com.dsarecur.backend.service;
 
+import com.dsarecur.backend.dto.AuthResponse;
 import com.dsarecur.backend.model.Users;
 import com.dsarecur.backend.repository.UserRepository;
 import com.dsarecur.backend.security.JWTService;
@@ -29,12 +30,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public String verifyUser(Users user) {
+    public AuthResponse verifyUser(Users user) {
         Authentication authentication =
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         if(authentication.isAuthenticated()) {
-            return jwtService.generateToken(user);
+            return new AuthResponse(jwtService.generateAccessToken(user), jwtService.generateRefreshToken(user));
         }
         return null;
+    }
+
+    public String refreshAccessToken(String refreshToken) {
+        return jwtService.getNewAccessToken(refreshToken);
     }
 }
