@@ -6,12 +6,12 @@ import com.dsarecur.backend.model.Users;
 import com.dsarecur.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     @Autowired
@@ -25,8 +25,21 @@ public class UserController {
 
     @PostMapping("/login")
     public Response<AuthResponse> loginUser(@RequestBody Users user) {
-        String token = userService.verifyUser(user);
-        return new Response<>(new AuthResponse(token), "User logged in successfully");
+        AuthResponse authResponse = userService.verifyUser(user);
+        return new Response<>(authResponse, "User logged in successfully");
+    }
+
+    @PostMapping("/refresh_token")
+    public Response<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
+
+        String refreshToken = request.get("refreshToken");
+
+        String newAccessToken = userService.refreshAccessToken(refreshToken);
+
+        return new Response<>(
+                Map.of("accessToken", newAccessToken),
+                "Token refreshed successfully"
+        );
     }
 
     @GetMapping("/")
