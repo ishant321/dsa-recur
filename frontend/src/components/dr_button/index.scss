@@ -1,0 +1,80 @@
+/* =========================
+   BASE BUTTON
+========================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px 12px;
+  border-radius: 4px;
+
+  font-weight: 600;
+  font-size: 14px;
+
+  border: none;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  user-select: none;
+}
+
+/* =========================
+   VARIANTS
+========================= */
+
+/* Primary */
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+/* Secondary */
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--text-high);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface);
+}
+
+.btn-outline {
+  outline: 2px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  opacity: 0.7;
+}
+
+/* Danger */
+.btn-danger {
+  background: var(--danger);
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+}
+
+/* =========================
+   STATES
+========================= */
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
