@@ -1,0 +1,56 @@
+
+/* Base text wrapper */
+.dr-text {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    sans-serif;
+  color: var(--text-high);
+}
+
+/* =========================
+   SIZE VARIANTS
+========================= */
+
+.dr-text--h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dr-text--h2 {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dr-text--h3 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.dr-text--title {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.dr-text--body {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.dr-text--small {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* =========================
+   MUTED VARIANT
+========================= */
+
+.dr-text--muted {
+  color: var(--text-medium);
+  opacity: 0.8;
+}

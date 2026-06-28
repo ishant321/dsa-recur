@@ -1,0 +1,72 @@
+/* =========================
+   INPUT WITH ICONS
+========================= */
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-label {
+    margin-bottom: 4px;
+}
+
+.input.has-leading {
+  padding-left: 42px;
+}
+
+.input.has-trailing {
+  padding-right: 42px;
+}
+
+textarea.input.has-leading {
+  padding-left: 42px;
+}
+
+textarea.input.has-trailing {
+  padding-right: 42px;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-medium);
+}
+
+.input-icon.leading {
+  left: 12px;
+}
+
+.input-icon.trailing {
+  right: 12px;
+}
+
+.input-error {
+  border-color: var(--danger) !important;
+}
+
+.input-error:focus {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px rgba(207, 102, 121, 0.25);
+}
+
+.input-error-text {
+  min-height: 16px;        /* reserves space → no shifting */
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--danger);
+
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: 0.15s ease;
+  pointer-events: none;
+}
+
+.input-error-text.show {
+  opacity: 1;
+  transform: translateY(0);
+}

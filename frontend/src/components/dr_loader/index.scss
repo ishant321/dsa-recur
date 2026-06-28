@@ -1,0 +1,17 @@
+.dr-loader {
+  display: inline-block;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: dr-spin 0.7s linear infinite;
+}
+
+@keyframes dr-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
