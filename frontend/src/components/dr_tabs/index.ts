@@ -1,0 +1,1 @@
+export { default } from "./dr_tabs";
