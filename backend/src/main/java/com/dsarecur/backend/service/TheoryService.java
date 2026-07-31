@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,17 +32,34 @@ public class TheoryService {
     private DashboardEventProducer dashboardEventProducer;
 
     public Theory createTheory(CreateTheoryRequest theoryRequest) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        Users user = userRepository.findByEmail(email);
+        int userId = user.getId();
+
+
         Theory theory = new Theory();
         theory.setContent(theoryRequest.getContent());
         theory.setTitle(theoryRequest.getTitle());
-        theory.setTopicId(theoryRequest.getTopicId());
+        theory.setUserId(userId);
+        if (theoryRequest.getTopicId() != null) {
+            theory.setTopicId(theoryRequest.getTopicId());
+        }
         theory.setCreatedAt(LocalDateTime.now());
 
         return theoryRepository.save(theory);
     }
 
     public List<Theory> getAllTheory() {
-        return theoryRepository.findAll();
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        Users user = userRepository.findByEmail(email);
+        int userId = user.getId();
+        return new ArrayList<>(theoryRepository.findByUserId(userId));
     }
 
     public Theory getTheoryById(Integer id) {
@@ -81,7 +99,9 @@ public class TheoryService {
         Theory theory = theoryRepository.findById(theoryRequest.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Theory id not found"));
         theory.setContent(theoryRequest.getContent());
-        theory.setTopicId(theoryRequest.getTopicId());
+        if (theoryRequest.getTopicId() != null) {
+            theory.setTopicId(theoryRequest.getTopicId());
+        }
         theory.setTitle(theoryRequest.getTitle());
 
         theoryRepository.save(theory);
@@ -89,6 +109,12 @@ public class TheoryService {
     }
 
     public Theory getRandomTheory() {
-        return theoryRepository.getRandomTheory();
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        Users user = userRepository.findByEmail(email);
+        int userId = user.getId();
+        return theoryRepository.getRandomTheoryByUserId(userId);
     }
 }

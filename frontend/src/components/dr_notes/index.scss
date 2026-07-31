@@ -1,0 +1,10 @@
+.dr-notes-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0, 0, 0, 0.56); backdrop-filter: blur(6px); }
+.dr-notes { width: min(100%, 42rem); max-height: calc(100vh - 2rem); overflow-y: auto; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.dr-notes__header { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+.dr-notes__create { display: flex; flex-direction: column; }
+.dr-notes__create .input { min-height: 5rem; resize: vertical; }
+.dr-notes__list { display: grid; gap: 0.75rem; margin-top: 1rem; }
+.dr-notes__item { padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.dr-notes__actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+.dr-notes__item .input { min-height: 4rem; resize: vertical; }
+@media (max-width: 480px) { .dr-notes__create { flex-direction: column; align-items: stretch; } }

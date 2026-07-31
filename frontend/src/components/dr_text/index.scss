@@ -54,3 +54,14 @@
   color: var(--text-medium);
   opacity: 0.8;
 }
+
+/* =========================
+   COLOR VARIANTS
+========================= */
+
+.dr-text--success { color: var(--color-success); }
+.dr-text--error { color: var(--color-error); }
+.dr-text--warning { color: var(--color-warning); }
+.dr-text--subdued { color: var(--color-subdued); }
+.dr-text--inverse { color: var(--color-inverse); }
+.dr-text--all { color: var(--color-all); }

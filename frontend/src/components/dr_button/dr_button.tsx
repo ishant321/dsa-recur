@@ -3,16 +3,24 @@ import DrIcon from "../dr_icon";
 import DrLoader from "../dr_loader";
 import "./index.scss";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "danger";
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "danger"
+  | "justText";
+type ButtonSize = "xs" | "s" | "m" | "l";
 
 interface Props {
-  children: React.ReactNode;
-  onClick?: () => void;
+  children?: React.ReactNode;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   variant?: ButtonVariant;
+  size?: ButtonSize;
   fullWidth?: boolean;
   leadingIcon?: string;
   trailingIcon?: string;
   disabled?: boolean;
+  ariaLabel?: string;
   style?: React.CSSProperties;
   className?: string;
   // Change this value to stop the loader
@@ -23,10 +31,12 @@ export default function DrButton({
   children,
   onClick,
   variant = "primary",
+  size = "m",
   fullWidth = false,
   leadingIcon,
   trailingIcon,
   disabled = false,
+  ariaLabel,
   style,
   className,
   resetLoadingKey,
@@ -37,11 +47,13 @@ export default function DrButton({
     setLoading(false);
   }, [resetLoadingKey]);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (loading || disabled) return;
 
-    setLoading(true);
-    onClick?.();
+    if (onClick) {
+      setLoading(true);
+      onClick(e);
+    }
   };
 
   const base = "btn";
@@ -51,15 +63,18 @@ export default function DrButton({
     secondary: "btn-secondary",
     outline: "btn-outline",
     danger: "btn-danger",
+    justText: "btn-just-text",
   };
 
   return (
     <button
       onClick={handleClick}
       disabled={disabled || loading}
+      aria-label={ariaLabel}
       className={`
         ${base}
         ${variants[variant]}
+        btn-${size}
         ${fullWidth ? "w-full" : ""}
         ${className || ""}
       `}

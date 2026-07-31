@@ -1,0 +1,46 @@
+.dr-theory-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.dr-theory-viewer {
+  width: 80%;
+  max-height: min(80vh, 42rem);
+  min-height: 80%;
+  height: 80%;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  color: var(--text-high);
+}
+
+.dr-theory-viewer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dr-theory-viewer__body { height: 90%; overflow-wrap: anywhere; overflow: auto; }
+
+.dr-theory-viewer__markdown { color: var(--text-high); font-size: 0.875rem; height: 100% }
+.dr-theory-viewer__markdown > * + * { margin-top: 0.75rem; }
+.dr-theory-viewer__markdown h1, .dr-theory-viewer__markdown h2, .dr-theory-viewer__markdown h3 { line-height: 1.3; }
+.dr-theory-viewer__markdown h1 { font-size: 1.25rem; }
+.dr-theory-viewer__markdown h2 { font-size: 1.125rem; }
+.dr-theory-viewer__markdown h3 { font-size: 1rem; }
+.dr-theory-viewer__markdown ul, .dr-theory-viewer__markdown ol { padding-left: 1.25rem; }
+.dr-theory-viewer__markdown blockquote { padding-left: 0.75rem; border-left: 3px solid var(--primary); color: var(--text-medium); }
+.dr-theory-viewer__markdown code { padding: 0.1rem 0.25rem; border-radius: var(--radius-sm); background: var(--surface-2); }
+.dr-theory-viewer__markdown pre { overflow: auto; padding: 0.75rem; border-radius: var(--radius-sm); background: var(--surface-2); }
+.dr-theory-viewer__markdown pre code { padding: 0; background: transparent; }
+.dr-theory-viewer__markdown hr { border: 0; border-top: 1px solid var(--border); }

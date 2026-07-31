@@ -11,10 +11,6 @@ public class CreateTopicRequest {
     @Size(min = 2, max = 100, message = "Topic name must be between 2 and 100 characters")
     private String name;
 
-    @NotNull(message = "UserId is required")
-    @Min(value = 1, message = "UserId must be a positive number")
-    private Integer userId;
-
     // optional field (can be null)
     private Integer parentId;
 
@@ -28,15 +24,8 @@ public class CreateTopicRequest {
         this.name = name;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
     public Integer getParentId() {
         return parentId;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
-    }
 }

@@ -15,6 +15,7 @@ interface Props {
   placeholder?: string;
   error?: boolean;
   errorMessage?: string;
+  readOnly?: boolean;
 }
 
 export default function DrTextInput({
@@ -28,6 +29,7 @@ export default function DrTextInput({
   placeholder,
   error = false,
   errorMessage,
+  readOnly = false,
 }: Props) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -64,6 +66,7 @@ export default function DrTextInput({
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
             onBlur={onBlur}
+            readOnly={readOnly}
           />
         ) : (
           <input
@@ -79,6 +82,7 @@ export default function DrTextInput({
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
             onBlur={onBlur}
+            readOnly={readOnly}
           />
         )}
 
