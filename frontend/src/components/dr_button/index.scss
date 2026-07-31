@@ -7,11 +7,9 @@
   align-items: center;
   justify-content: center;
 
-  padding: 8px 12px;
   border-radius: 4px;
 
   font-weight: 600;
-  font-size: 14px;
 
   border: none;
   cursor: pointer;
@@ -19,6 +17,30 @@
   transition: all 0.2s ease;
 
   user-select: none;
+}
+
+/* =========================
+   SIZES
+========================= */
+
+.btn-xs {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.btn-s {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.btn-m {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.btn-l {
+  padding: 10px 16px;
+  font-size: 16px;
 }
 
 /* =========================
@@ -63,6 +85,17 @@
 
 .btn-danger:hover {
   opacity: 0.9;
+}
+
+/* Text-only */
+.btn-just-text {
+  padding: 0;
+  background: transparent;
+  color: var(--primary);
+}
+
+.btn-just-text:hover {
+  color: var(--primary-hover);
 }
 
 /* =========================

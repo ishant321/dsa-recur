@@ -1,0 +1,13 @@
+.dr-popover__target {
+  display: inline-flex;
+}
+
+.dr-popover {
+  z-index: 100;
+  min-width: 180px;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}

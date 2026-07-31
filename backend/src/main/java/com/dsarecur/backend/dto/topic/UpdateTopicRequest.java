@@ -17,10 +17,6 @@ public class UpdateTopicRequest {
 
     private Integer parentId;
 
-    @NotNull(message = "UserId is required")
-    @Min(value = 1, message = "UserId must be valid")
-    private Integer userId;
-
     // getters & setters
 
     public Integer getId() {
@@ -45,13 +41,5 @@ public class UpdateTopicRequest {
 
     public void setParentId(Integer parentId) {
         this.parentId = parentId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 }

@@ -4,6 +4,7 @@ import com.dsarecur.backend.dto.Response;
 import com.dsarecur.backend.dto.question.CreateQuestionRequest;
 import com.dsarecur.backend.dto.question.UpdateQuestionRequest;
 import com.dsarecur.backend.model.Questions;
+import com.dsarecur.backend.model.Theory;
 import com.dsarecur.backend.service.QuestionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,15 @@ public class QuestionController {
                 .body(new Response<>(questions, "Questions fetched for topic id: " + topicId));
     }
 
-    // 3. GET QUESTION BY ID
+    // 3. GET ALL QUESTIONS
+    @GetMapping("/all_questions")
+    public ResponseEntity<Response<?>> getAllQuestions() {
+        List<Questions> questions = questionService.getAllQuestions();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Response<>(questions, "Questions fetched successfully."));
+    }
+
+    // 4. GET QUESTION BY ID
     @GetMapping("questions/{id}")
     public ResponseEntity<Response<?>> getQuestionById(@PathVariable Integer id) {
         Questions question = questionService.getQuestionById(id);
@@ -46,7 +55,7 @@ public class QuestionController {
                 .body(new Response<>(question, "Question fetched successfully"));
     }
 
-    // 4. UPDATE QUESTION
+    // 5. UPDATE QUESTION
     @PutMapping("/questions")
     public ResponseEntity<Response<?>> updateQuestion(@Valid @RequestBody UpdateQuestionRequest updateQuestionRequest) {
         Questions question = questionService.updateQuestion(updateQuestionRequest);
@@ -54,7 +63,7 @@ public class QuestionController {
                 .body(new Response<>(question, "Question updated successfully"));
     }
 
-    // 5. DELETE QUESTION
+    // 6. DELETE QUESTION
     @DeleteMapping("/questions/{id}")
     public ResponseEntity<Response<?>> deleteQuestion(@PathVariable Integer id) {
         Questions question = questionService.deleteQuestionById(id);
@@ -62,12 +71,25 @@ public class QuestionController {
                 .body(new Response<>(question, "Question deleted successfully"));
     }
 
-    // 6. MARK QUESTION AS REVISITED (VISIT_COUNT++, UPDATE LAST_VISITED)
+    // 7. MARK QUESTION AS REVISITED (VISIT_COUNT++, UPDATE LAST_VISITED)
     @PostMapping("/questions/{id}/visit")
     public ResponseEntity<Response<?>> visitQuestion(@PathVariable Integer id) {
         questionService.visitQuestion(id);
         System.out.println("id" + id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new Response<>(null, "Question visited successfully"));
+    }
+
+    // 8. GET RANDOM QUESTION
+    @GetMapping("/questions/random")
+    public ResponseEntity<Response<?>> getRandomQuestion() {
+
+        Questions question = questionService.getRandomQuestion();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Response<>(
+                        question,
+                        "Random question fetched successfully"
+                ));
     }
 }

@@ -58,6 +58,14 @@ body {
   --danger: #cf6679;
   --warning: #ffb74d;
 
+  /* Semantic text colors */
+  --color-success: var(--success);
+  --color-error: var(--danger);
+  --color-warning: var(--warning);
+  --color-subdued: var(--text-medium);
+  --color-inverse: #121212;
+  --color-all: var(--text-high);
+
   /* Radius */
   --radius-sm: 4px;
   --radius-md: 8px;

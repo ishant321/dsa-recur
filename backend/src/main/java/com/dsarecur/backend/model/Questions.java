@@ -24,6 +24,9 @@ public class Questions {
     @Column(nullable = false)
     private Integer topicId;
 
+    @Column(nullable = false)
+    private Integer userId;
+
     private int visitedCount = 0;
 
     private LocalDateTime lastVisitedAt;
@@ -70,8 +73,14 @@ public class Questions {
         return topicId;
     }
 
+    public Integer getUserId() { return userId; }
+
     public void setTopicId(Integer topicId) {
         this.topicId = topicId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public int getVisitedCount() {
