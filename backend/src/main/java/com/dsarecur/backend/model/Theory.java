@@ -1,9 +1,6 @@
 package com.dsarecur.backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
@@ -18,9 +15,13 @@ public class Theory {
     @NotBlank
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     @NotBlank
     private String content;
     private Integer topicId;
+
+    @Column(nullable = false)
+    private Integer userId;
 
     private LocalDateTime createdAt;
 
@@ -38,6 +39,10 @@ public class Theory {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Theory() {
@@ -66,6 +71,8 @@ public class Theory {
     public void setTopicId(Integer topicId) {
         this.topicId = topicId;
     }
+
+    public Integer getUserId() { return userId;}
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

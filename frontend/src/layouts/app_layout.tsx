@@ -7,12 +7,12 @@ interface MainLayoutProps {
 
 function AppLayout({ setUser }: MainLayoutProps) {
   return (
-    <>
+    <div className="flex h-full flex-col">
       <DrNavBar setUser={setUser} />
-      <main>
+      <main className="flex flex-1" style={{ minHeight: 0 }}>
         <Outlet />
       </main>
-    </>
+    </div>
   );
 }
 

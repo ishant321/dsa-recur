@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,11 +35,19 @@ public class QuestionService {
     private DashboardEventProducer dashboardEventProducer;
 
     public Questions createQuestion(CreateQuestionRequest questionRequest) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        Users user = userRepository.findByEmail(email);
+        int userId = user.getId();
+
         Questions question = new Questions();
 
         question.setTitle(questionRequest.getTitle());
         question.setLink(questionRequest.getLink());
         question.setDifficulty(questionRequest.getDifficulty());
+        question.setUserId(userId);
 
         topicRepository.findById(questionRequest.getTopicId())
                 .orElseThrow(() -> new ResourceNotFoundException("Topic not found"));
@@ -122,5 +131,26 @@ public class QuestionService {
         question.setLastVisitedAt(LocalDateTime.now());
 
         questionRepository.save(question);
+    }
+
+    public List<Questions> getAllQuestions() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        Users user = userRepository.findByEmail(email);
+        int userId = user.getId();
+        return new ArrayList<>(questionRepository.findByUserId(userId));
+    }
+
+    public Questions getRandomQuestion() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        Users user = userRepository.findByEmail(email);
+        int userId = user.getId();
+
+        return questionRepository.getRandomQuestionByUserId(userId);
     }
 }

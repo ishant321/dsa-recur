@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { request } from "../api/request";
 import { v4 } from "uuid";
+import { validateEmail, validatePassword } from "../utils";
 
 interface LoginProps {
   setUser: React.Dispatch<React.SetStateAction<any>>;
@@ -17,38 +18,11 @@ export default function Login({ setUser }: LoginProps) {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [resetLoadingKey, setResetLoadingKey] = useState("");
-  const validateEmail = () => {
-    let isValid = true;
-
-    setEmailError("");
-
-    if (!email.trim()) {
-      setEmailError("Email is required");
-      isValid = false;
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      setEmailError("Please enter a valid email");
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
-  const validatePassword = () => {
-    let isValid = true;
-
-    setPasswordError("");
-    if (!password.trim()) {
-      setPasswordError("Password is required");
-      isValid = false;
-    }
-
-    return isValid;
-  };
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if (!validateEmail() || !validatePassword()) {
+    if (!validateEmail(email).isValid || !validatePassword(password).isValid) {
       return;
     }
     try {
@@ -139,13 +113,9 @@ export default function Login({ setUser }: LoginProps) {
               onChange={(value) => {
                 setEmail(value);
 
-                const emailErr = !value.trim()
-                  ? "Email is required"
-                  : !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)
-                    ? "Please enter a valid email"
-                    : "";
+                const { error } = validateEmail(value);
 
-                setEmailError(emailErr);
+                setEmailError(error);
               }}
               placeholder="Enter email"
               error={!!emailError}
@@ -159,9 +129,9 @@ export default function Login({ setUser }: LoginProps) {
               onChange={(value) => {
                 setPassword(value);
 
-                const passwordErr = !value.trim() ? "Password is required" : "";
+                const { error } = validatePassword(value);
 
-                setPasswordError(passwordErr);
+                setPasswordError(error);
               }}
               placeholder="Enter password"
               error={!!passwordError}

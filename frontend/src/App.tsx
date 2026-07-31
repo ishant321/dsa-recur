@@ -2,10 +2,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Home from "./pages/home";
+import Topics from "./pages/topics";
 import type { User } from "./types";
 import { useEffect, useState } from "react";
 import { request } from "./api/request";
 import AppLayout from "./layouts/app_layout";
+import Questions from "./pages/topics/questions";
+import Theories from "./pages/theories";
 
 function Dashboard() {
   return <div>Dashboard (later)</div>;
@@ -102,9 +105,12 @@ export default function App() {
       >
         <Route path="/home" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/topics" element={<Topics />} />
+        <Route path="/questions" element={<Questions />} />
+        <Route path="/theories" element={<Theories />} />
+        <Route path="/topics/:topicId/questions" element={<Questions />} />
 
         {/* Add more pages here */}
-        {/* <Route path="/topics" element={<Topics />} /> */}
         {/* <Route path="/questions" element={<Questions />} /> */}
       </Route>
     </Routes>
