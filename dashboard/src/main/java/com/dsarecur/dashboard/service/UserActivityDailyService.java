@@ -31,26 +31,34 @@ public class UserActivityDailyService {
     @Autowired
     private UserEntityActivityRepo  userEntityActivityRepo;
 
-    public SummaryDto getSummary() {
+    private String getCurrentUser() {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
-        assert authentication != null;
-        String userEmail = authentication.getName();
+        if(authentication == null){
+            throw new RuntimeException("Unauthenticated");
+        }
 
-        List<UserActivityDaily> userActivityDailyInfo = userActivityDailyRepo.findAll();
-        List<UserEntityActivity> userEntityActivityInfo = userEntityActivityRepo.findAll();
+        return authentication.getName();
+    }
+
+    public SummaryDto getSummary() {
+        String userEmail = getCurrentUser();
+
+        List<UserActivityDaily> userActivityDailyInfo = userActivityDailyRepo.findByUserId(userEmail);
+        List<UserEntityActivity> userEntityActivityInfo = userEntityActivityRepo.findByUserId(userEmail);
 
         SummaryDto summaryDto = new SummaryDto();
 
         // ADD USERID FILTER IN EVERY QUERY
 
         // 1. questionVisits: from "UserEntityActivity" filter by entityType === 'QUESTION' and sum of "visitCount"
-        int questionsRevised = userEntityActivityInfo.stream()
+        int questionsRevised = (int) userEntityActivityInfo.stream()
                 .filter(activity -> activity.getUserId().equals(userEmail))
                 .filter(activity ->
                         activity.getEntityType() == EntityType.QUESTION)
-                .mapToInt(UserEntityActivity::getVisitCount)
-                .sum();
+                .map(UserEntityActivity::getEntityId)
+                .distinct()
+                .count();
 
         summaryDto.setQuestionsRevised(questionsRevised);
 
@@ -60,7 +68,6 @@ public class UserActivityDailyService {
                 .mapToInt(UserEntityActivity::getVisitCount)
                 .sum();
         summaryDto.setTotalRevisions(totalRevisions);
-        System.out.println("userEmail: " + userEmail);
 
         // 3. topicsCovered: from "UserEntityActivity" count of unique topics(entityType)
         int topicsCovered = (int) userEntityActivityInfo.stream()
@@ -92,7 +99,7 @@ public class UserActivityDailyService {
                 .map(UserEntityActivity::getEntityId)
                 .distinct()
                 .count();
-        summaryDto.setNotesRevised(theoriesRevised);
+        summaryDto.setTheoriesRevised(theoriesRevised);
 
 
         // 6. currentStreak: in "UserActivityDaily" start from date today, and go back till continiously the userid
@@ -142,19 +149,14 @@ public class UserActivityDailyService {
     */
     public List<WeakTopicDto> getWeakTopics() {
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        assert authentication != null;
-
-        String userEmail = authentication.getName();
+        String userEmail = getCurrentUser();
 
         // Topics not visited in last 15 days
         LocalDateTime fifteenDaysAgo =
                 LocalDateTime.now().minusDays(15);
 
         List<UserEntityActivity> userEntityActivityInfo =
-                userEntityActivityRepo.findAll();
+                userEntityActivityRepo.findByUserId(userEmail);
 
         return userEntityActivityInfo.stream()
 
@@ -189,15 +191,10 @@ public class UserActivityDailyService {
     // getMostRevisedQuestions
     public List<MostRevisedQuestionDto> getMostRevisedQuestions() {
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        assert authentication != null;
-
-        String userEmail = authentication.getName();
+        String userEmail = getCurrentUser();
 
         List<UserEntityActivity> userEntityActivityInfo =
-                userEntityActivityRepo.findAll();
+                userEntityActivityRepo.findByUserId(userEmail);
 
         return userEntityActivityInfo.stream()
 
@@ -234,15 +231,10 @@ public class UserActivityDailyService {
     // getLeastVisitedQuestions
     public List<LeastRevisedQuestionDto> getLeastRevisedQuestions() {
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        assert authentication != null;
-
-        String userEmail = authentication.getName();
+        String userEmail = getCurrentUser();
 
         List<UserEntityActivity> userEntityActivityInfo =
-                userEntityActivityRepo.findAll();
+                userEntityActivityRepo.findByUserId(userEmail);
 
         return userEntityActivityInfo.stream()
 
@@ -277,15 +269,10 @@ public class UserActivityDailyService {
 
     // getActivityOverTime
     public Integer getActivity() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        assert authentication != null;
-
-        String userEmail = authentication.getName();
+        String userEmail = getCurrentUser();
 
         List<UserActivityDaily> userActivityDailyInfo =
-                userActivityDailyRepo.findAll();
+                userActivityDailyRepo.findByUserId(userEmail);
 
         return userActivityDailyInfo.stream()
 
