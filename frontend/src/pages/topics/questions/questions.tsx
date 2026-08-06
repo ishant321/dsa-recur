@@ -27,6 +27,17 @@ export default function Questions() {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [notes, setNotes] = useState<DrNote[]>([]);
 
+  const markQuestionAsVisited = async (questionId: ItemId) => {
+    try {
+      await request({
+        method: "POST",
+        url: `/questions/${questionId}/visit`,
+      });
+    } catch (error) {
+      console.error("Failed to mark question as visited:", error);
+    }
+  };
+
   const getAllQuestions = async () => {
     try {
       const url = topicId ? `/questions?topic_id=${topicId}` : "/all_questions";
@@ -194,6 +205,7 @@ export default function Questions() {
                   onEdit={() => { setEditQuestionId(question.id); setIsFormOpen(true); }}
                   onAddNote={() => { void openNotes(question); }}
                   onViewNotes={() => { void openNotes(question); }}
+                  onNavigation={() => { void markQuestionAsVisited(question.id); }} 
                 />
               ))}
             </div>

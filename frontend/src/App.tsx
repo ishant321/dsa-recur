@@ -9,26 +9,26 @@ import { request } from "./api/request";
 import AppLayout from "./layouts/app_layout";
 import Questions from "./pages/topics/questions";
 import Theories from "./pages/theories";
-
-function Dashboard() {
-  return <div>Dashboard (later)</div>;
-}
+import Dashboard from "./pages/dashboard";
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = sessionStorage.getItem("user");
+
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored);
+
+    return {
+      email: parsed.email,
+      isAuthenticated: true,
+    };
+  });
 
   const getStoredUser = () => {
     const data = sessionStorage.getItem("user");
     return data ? JSON.parse(data) : null;
   };
-
-  useEffect(() => {
-    const storedUser = getStoredUser();
-
-    if (storedUser) {
-      setUser({ email: storedUser.email, isAuthenticated: true });
-    }
-  }, []);
 
   useEffect(() => {
     if (!user?.isAuthenticated) {

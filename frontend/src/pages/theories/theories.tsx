@@ -86,6 +86,15 @@ export default function Theories() {
     }
   };
 
+  // Mark theory as visited
+  const markTheoryAsVisited = async (id: ItemId) => {
+    try {
+      await request({ method: "GET", url: `/theory/${id}` });
+    } catch (error) {
+      console.error("Failed to mark theory as visited:", error);
+    }
+  };
+
   const handleFormSubmit = async (data: TheoryFormData) => {
     await createTheory(data);
     await getAllTheories();
@@ -95,6 +104,12 @@ export default function Theories() {
   useEffect(() => {
     getAllTheories();
   }, []);
+
+  useEffect(() => {
+    if(!viewTheoryId) return;
+    markTheoryAsVisited(viewTheoryId);
+
+  }, [viewTheoryId]);
 
   useEffect(() => {
     let filtered = allTheories.filter((theory) =>
