@@ -79,26 +79,6 @@ public class QuestionService {
         return questionRepository.findByTopicId(topicId);
     }
 
-    public Questions getQuestionById(Integer id) {
-        Questions question = questionRepository
-                            .findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
-
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        String email = authentication.getName();
-
-        DashboardEvent event = new DashboardEvent();
-        event.setUserId(email);
-        event.setEntityId(question.getId());
-        event.setEntityType(DashboardEvent.EntityType.QUESTION);
-        event.setLastVisited(LocalDateTime.now());
-        dashboardEventProducer.publishEvent(event);
-
-        return question;
-    }
-
     public Questions updateQuestion(@Valid UpdateQuestionRequest updateQuestionRequest) {
         Questions question = questionRepository.findById(updateQuestionRequest.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
@@ -124,8 +104,21 @@ public class QuestionService {
     }
 
     public void visitQuestion(Integer id) {
-        Questions question =  questionRepository.findById(id)
+        Questions question = questionRepository
+                .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        DashboardEvent event = new DashboardEvent();
+        event.setUserId(email);
+        event.setEntityId(question.getId());
+        event.setEntityType(DashboardEvent.EntityType.QUESTION);
+        event.setLastVisited(LocalDateTime.now());
+        dashboardEventProducer.publishEvent(event);
 
         question.setVisitedCount(question.getVisitedCount() + 1);
         question.setLastVisitedAt(LocalDateTime.now());

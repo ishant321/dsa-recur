@@ -44,6 +44,7 @@ interface QuestionProps {
   onAddNote?: (item: QuestionItem) => void;
   onViewNotes?: (item: QuestionItem) => void;
   onClick?: () => void;
+  onNavigation?: (id: number | string) => void;
 }
 
 interface TheoryProps {
@@ -211,6 +212,7 @@ export default function DrItemCard(props: Props) {
             href={item.link}
             target="_blank"
             rel="noreferrer"
+            onClick={() => {props.onNavigation?.(item.id)}}
           >
             {item.link}
           </a>

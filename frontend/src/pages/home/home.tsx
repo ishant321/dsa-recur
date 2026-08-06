@@ -14,7 +14,7 @@ export default function Home() {
 
 const navigateToQOD = async () => {
   try {
-    const response = await request({
+    const response: {data: {link: string}} = await request({
       method: "GET",
       url: "/questions/random",
     });

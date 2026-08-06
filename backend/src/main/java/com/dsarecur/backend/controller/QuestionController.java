@@ -47,13 +47,6 @@ public class QuestionController {
     }
 
     // 4. GET QUESTION BY ID
-    @GetMapping("questions/{id}")
-    public ResponseEntity<Response<?>> getQuestionById(@PathVariable Integer id) {
-        Questions question = questionService.getQuestionById(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new Response<>(question, "Question fetched successfully"));
-    }
 
     // 5. UPDATE QUESTION
     @PutMapping("/questions")

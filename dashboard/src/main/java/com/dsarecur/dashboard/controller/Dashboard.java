@@ -21,6 +21,7 @@ public class Dashboard {
     // 1. GET DASHBOARD SUMMARY
     @GetMapping("/summary")
     public ResponseEntity<Response<SummaryDto>> summary() {
+        System.out.println("Dashboard Summary");
         SummaryDto summary = userActivityDailyService.getSummary();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new Response<>(summary, "Summary fetched successfully"));

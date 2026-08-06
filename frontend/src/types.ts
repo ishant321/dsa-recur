@@ -1,4 +1,4 @@
-export type ItemId = string | number;
+export type ItemId = number;
 
 export interface ApiResponse<T> {
   data: T;
