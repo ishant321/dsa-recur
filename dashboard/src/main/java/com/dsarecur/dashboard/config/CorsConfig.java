@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "https://dsa-recur-git-main-ishant321s-projects.vercel.app")
+                        .allowedOrigins("http://localhost:3000", "https://dsa-recur-git-main-ishant321s-projects.vercel.app", "https://dsa-recur.ee-app.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
