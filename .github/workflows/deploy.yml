@@ -1,0 +1,40 @@
+name: Deploy to Oracle VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, x64, oracle-prod]
+
+    steps:
+      - name: Deploy application
+        run: |
+          set -e
+
+          cd /home/ubuntu/dsa-recur
+
+          echo "Fetching latest code..."
+          git fetch origin
+
+          echo "Updating to main..."
+          git reset --hard origin/main
+
+          echo "Building and starting containers..."
+          docker compose up -d --build
+
+          echo "Waiting for application..."
+          sleep 10
+
+          echo "Container status:"
+          docker compose ps
+
+          echo "Health check..."
+          curl --fail http://localhost/ || exit 1
+
+          echo "Cleaning unused Docker images..."
+          docker image prune -f
+
+          echo "Deployment successful!"
